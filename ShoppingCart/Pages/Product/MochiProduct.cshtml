@@ -1,0 +1,282 @@
+﻿@page
+@model ShoppingCart.Pages.Product.MochiProductModel
+@{
+    Dictionary<string, object> Data = ViewData["row"] as Dictionary<string, object>;
+    var prd = ViewData["Mochi"] as System.Data.DataTable;
+}
+<style>
+    .Des, .Des tr, .Des td {
+        border-color: #000;
+        border-width: 1px 1px 1px 1px;
+        border-style: solid;
+        padding: 2px 8px;
+    }
+
+    .span {
+        word-wrap: break-word;
+        overflow: hidden;
+        word-break: normal;
+        width: auto;
+        display: block;
+        white-space: pre-wrap;
+    }
+
+    .DesO {
+        border-color: #000;
+        border-width: 0px 0px 2px 0px;
+        border-style: solid;
+        padding: 2px 8px;
+        /*color:forestgreen*/
+    }
+
+    .StatusA input[type="radio"] {
+        display: none;
+    }
+
+        .StatusA input[type="radio"] + label {
+            display: inline-block;
+            background-color: #1781b9;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 10px;
+            color: #f5f5f5;
+        }
+
+        .StatusA input[type="radio"]:checked + label {
+            background-color: #17A2B5;
+        }
+
+    .form-controls {
+        display: block;
+        height: calc(1.5em + 0.75rem + 2px);
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+</style>
+@section Scripts
+{
+    <script>
+        var o = {};
+        var i = {};
+        $(function () {
+            //GetUser();
+
+            o.P_Modify = new bootstrap.Modal(document.getElementById('P_Modify'), {
+                keyboard: false
+                //, backdrop: 'static'
+            });
+            //Search({ Status: "1" });
+
+        });
+
+        function New() {
+            $('#P_Modify').toggle();
+            $('#P_Search').hide();
+        }
+        //function Edit() {
+        //    $('#P_Edit').toggle();
+        //    $('#P_Modify').hide();
+        //    $('#P_Search').hide();
+        //}
+        function hide() {
+            $("#P_Modify").hide();
+            $('#P_Search').show();
+        }
+        function AJ() {
+            $.ajax({
+                url: '/Product/MochiProduct?handler=AJ',
+                type: 'post',
+                data: { Key: $('#Key').val() },
+                //加上X-CSRF-TOKEN header
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("X-CSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                //headers: { 'X-CSRF-TOKEN': $('[name=__RequestVerificationToken]').val() },
+                dataType: 'json',
+                success: function (R) {
+                    alert(R);
+                }
+                , statusCode: { 404: function () { self.location = '/Account/Login/'; } }
+                , complete: function (XHR, TS) { XHR = null; }
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                //ajax.abort()會觸發
+                if (jqXHR.responseText != null) {
+                    alert('jqXHR.responseText:' + jqXHR.responseText);
+                    //finished(jqXHR.responseText);
+                }
+                //alert('fail' + jqXHR.responseText + textStatus + errorThrown);
+            });
+
+        }
+        function Edit() {
+            $('#P_Edit').toggle();
+            $('#P_Modify').hide();
+            $('#P_Search').hide();
+            //$.ajax({
+            //    url: '/Product/MochiProduct?handler=Query',
+            //    type: 'post',
+            //    data: { ID: $('#ID').val() },
+            //    beforeSend: function (xhr) {
+            //        xhr.setRequestHeader("X-CSRF-TOKEN",
+            //            $('input:hidden[name="__RequestVerificationToken"]').val());
+            //    },
+            //    dataType: 'json',
+            //    success: function (R) {
+            //        alert(R);
+            //    }
+            //    , statusCode: { 404: function () { self.location = '/Account/Login/'; } }
+            //    , complete: function (XHR, TS) { XHR = null; }
+            //}).fail(function (jqXHR, textStatus, errorThrown) {
+            //    //ajax.abort()會觸發
+            //    if (jqXHR.responseText != null) {
+            //        alert('jqXHR.responseText:' + jqXHR.responseText);
+            //        //finished(jqXHR.responseText);
+            //        alert(JSON.stringify(errorThrown));
+            //    }
+            //    //alert('fail' + jqXHR.responseText + textStatus + errorThrown);
+            //});
+
+        }
+
+
+    </script>
+
+}
+<table id="P_Search" class="table table-striped">
+    <thead>
+        <tr>
+            <td colspan="3">
+                <input type="text" id="Key" name="Key" />
+                <button type="button" class="btn btn-primary" onclick="AJ();">查詢</button>
+                <button type="button" class="btn btn-info" onclick="New();">新增</button>
+            </td>
+        </tr>
+        <tr>
+            <th><span>日期</span></th>
+            <th><span>產品編號</span></th>
+            <th><span>產品名稱</span></th>
+            <th><span>數量</span></th>
+            <th><span>價格</span></th>
+            <th><span>產品狀態</span></th>
+            <th><span>備註</span></th>
+            <th><span></span></th>
+        </tr>
+    </thead>
+    <tbody id="Row">
+        @if (prd != null)
+        {
+            foreach (System.Data.DataRow row in prd.Rows)
+            {
+                <tr>
+                    <td>@row["Dates"].ToString()</td>
+                    <td>@row["Code"].ToString()</td>
+                    <td>@row["Name"].ToString()</td>
+                    <td>@row["Qty"].ToString()</td>
+                    <td>@row["Cost"].ToString()</td>
+                    <td>@row["Status"].ToString()</td>
+                    <td>@row["Remark"].ToString()</td>
+                    <td><form method="post"><input type="hidden" id="ID" name="ID" value="@row["ID"].ToString()" /><button class="btn btn-primary" type="submit" asp-page-handler="Query" onclick="Edit();">編輯</button></form></td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<div id="P_Modify" style="display:none;">
+    <form method="post">
+        <table class="table-striped">
+            <tr><th>日期</th><td><input type="hidden" name="ID" /><input type="date" id="Date" name="Date" class="form-controls" /></td></tr>
+            <tr><th>產品編號</th><td><input type="text" id="Code" name="Code" class="form-controls" /></td></tr>
+            <tr><th>產品名稱</th><td><input type="text" id="Name" name="Name" class="form-controls" /></td></tr>
+            <tr><th>價格</th><td><input type="number" id="Cost" name="Cost" class="form-controls" /></td></tr>
+            <tr><th>數量</th><td><input type="number" id="Qty" name="Qty" class="form-controls" /></td></tr>
+            <tr>
+                <th>產品狀態</th>
+                <td>
+                    <div class="StatusA" style="width:700px">
+                        <input type="radio" id="Status_A" name="Status" value="1" />
+                        <label for="Status_A">數量充足</label>
+                        <input type="radio" id="Status_B" name="Status" value="2" />
+                        <label for="Status_B">數量 < 10</label>
+                        <input type="radio" id="Status_C" name="Status" value="3" />
+                        <label for="Status_C">缺貨</label>
+                    </div>
+                </td>
+                <td>
+                    @*<select>
+                            <option value="">= 全部 =</option>
+                            @{
+                                foreach (var row in Data)
+                                {
+                                    <option value=@row["ID"].ToString()>@row["Name"].ToString()</option>
+                                }
+                            }
+                        </select>*@
+            </tr>
+            <tr>
+                <th>備註</th>
+                <td>
+                    <textarea style="width:250px;height:100px;" id="Remark" name="Remark" class="form-control"></textarea>
+                </td>
+            </tr>
+            <tr><th>排序</th><td><input type="number" style="width:70px;" id="Seq" name="Seq" class="form-controls" /></td></tr>
+            <tr>
+                <td></td>
+                <td style="text-align:right;">
+                    <button type="button" class="btn btn-secondary" onclick="hide();">取消</button>
+                    <button type="submit" class="btn btn-primary" asp-page-handler="Insert">新增</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="P_Edit">
+    <form method="post">
+        <table class="table-striped">
+            @if (Data != null)
+            {
+                <tr><th>日期</th><td><input type="date" id="Date" style="" name="Date" value="@Data["Date"].ToString()" class="form-controlsx" /></td></tr>
+                <tr><th>產品編號</th><td><input type="text" id="Code" name="Code" value="@Data["Code"].ToString()" class="form-controls" /></td></tr>
+                <tr><th>產品名稱</th><td><input type="text" id="Name" name="Name" value="@Data["Name"].ToString()" class="form-controls" /></td></tr>
+                <tr><th>價格</th><td><input type="number" id="Cost" name="Cost" value="@Data["Cost"].ToString()" class="form-controls" /></td></tr>
+                <tr><th>數量</th><td><input type="number" id="Qty" name="Qty" value="@Data["Qty"].ToString()" class="form-controls" /></td></tr>
+                <tr>
+                <th>產品狀態</th>
+                <td>
+                    <div class="StatusA" style="width:800px" value="@Data["Status"].ToString()">
+                        <input type="Radio" id="Status_A" name="Status" value="@Data["Status"].ToString()" />
+                        <label for="Status_A">數量充足</label>
+                        <input type="Radio" id="Status_B" name="Status" value="@Data["Status"].ToString()" />
+                        <label for="Status_B">數量小於10</label>
+                        <input type="Radio" id="Status_C" name="Status" value="@Data["Status"].ToString()" />
+                        <label for="Status_C">缺貨</label>
+                    </div>
+                </td>
+            </tr>
+                <tr>
+                    <th>備註</th>
+                    <td colspan="3">
+                        <textarea style="width:250px;height:100px;" id="Remark" name="Remark" value="@Data["Remark"].ToString()" class="form-control"></textarea>
+                    </td>
+                </tr>
+                <tr><th>排序</th><td><input type="number" id="Seq" name="Seq" value="@Data["Seq"].ToString()" class="form-controls" /></td></tr>
+                <tr>
+                    <td>
+                        <button type="button" class="btn btn-secondary" onclick="hide();">取消</button>
+                        <button type="submit" class="btn btn-primary" asp-page-handler="Update">更新</button>
+                        <input type="hidden" name="ID" value="@Data["ID"].ToString()" /><button class="btn btn-info" type="submit" asp-page-handler="Delete">刪除</button>
+                    </td>
+                </tr>
+            }
+        </table>
+    </form>
+</div>
+
+

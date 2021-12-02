@@ -1,0 +1,60 @@
+﻿@page
+@model ShoppingCart.Pages.UsersControl.UsersModel
+@{
+}
+<style>
+    .Des, .Des TD, .Des TH {
+        border-color: #000;
+        border-width: 1px 1px;
+        border-style: solid;
+        padding: 2px 8px;
+    }
+
+    .td-img {
+        white-space: normal !important;
+    }
+
+    .img-thumbnail {
+        max-width: 11CM;
+        max-height: 11CM;
+    }
+
+    .pre-text {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        word-break: break-all;
+    }
+
+    .span {
+        word-break: normal;
+        width: auto;
+        display: block;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow: hidden;
+    }
+
+    th {
+        text-align: center !important;
+    }
+
+    td {
+        padding: 2px 8px !important;
+    }
+
+    .br {
+        writing-mode: vertical-lr;
+    }
+
+    .noDes {
+        border-color: #000;
+        border-width: 0px !important;
+        border-style: solid;
+        padding: 2px 8px;
+    }
+</style>
+<form method="post">
+    <div></div><input type="submit" value="1" asp-page-handler="usres1" asp-route-sessioncount="10" /><br />
+    <input type="submit" value="2" asp-page-handler="usres2" asp-route-sessioncount="20" /><br />
+    <input type="submit" value="3" asp-page-handler="usres3" asp-route-sessioncount="30" /><br />
+</form>
